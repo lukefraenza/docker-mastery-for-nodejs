@@ -4,7 +4,7 @@ RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
 
 ENV NODE_VERSION 18.18.1
-ENV ARCH x64
+ENV ARCH=x64
 
 RUN set -ex \
   && for key in \
@@ -33,5 +33,7 @@ RUN set -ex \
   # smoke tests
   && node --version \
   && npm --version
+
+USER node
 
 CMD [ "node" ]
