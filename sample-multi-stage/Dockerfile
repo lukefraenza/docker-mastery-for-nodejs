@@ -7,7 +7,8 @@ EXPOSE 3000
 
 # pull in the package.json and package-lock.json, and do a production npm install
 COPY package*.json ./
-RUN npm ci && npm cache clean --force
+RUN npm ci \
+    && npm cache clean --force
 
 COPY . .
 
@@ -17,8 +18,9 @@ FROM prod as dev
 ENV NODE_ENV=development
 
 # install the devDependencies
-RUN npm install && npm cache clean --force
-CMD ["nodemon", "./bin/www", "--inspect=0.0.0.0:9229"]
+RUN npm install \
+    && npm cache clean --force
+CMD ["node_modules/nodemon/bin/nodemon.js", "./bin/www", "--inspect=0.0.0.0:9229"]
 
 FROM dev as test
 ENV NODE_ENV=development
