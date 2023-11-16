@@ -4,7 +4,10 @@ EXPOSE 3000
 
 WORKDIR /usr/src/app
 
-COPY package.json package-lock.json* ./ 
+# I added this line
+RUN apk add --update curl
+
+COPY package.json package-lock.json* ./
 
 RUN npm install && npm cache clean --force
 
