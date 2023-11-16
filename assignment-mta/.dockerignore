@@ -1,0 +1,14 @@
+# don't want git history in image
+.git
+
+*docker-compose*
+
+# for Node.js apps, you want to build the node_modules in the image, and not copy from host
+node_modules
+# npm log
+npm-debug
+
+# specific folders to exclude
+in
+out
+logs
