@@ -1,5 +1,8 @@
 FROM node:14-slim
 
+# define environment variable and set default
+ENV CHARCOAL_FACTOR=0.1
+
 # Set the working directory to the application directory
 WORKDIR /app
 
