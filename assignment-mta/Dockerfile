@@ -7,6 +7,7 @@ WORKDIR /app
 RUN apt-get update \
     && apt-get install -y graphicsmagick
 
+
 # pull in the package.json and package-lock.json, and do a production npm install
 COPY package*.json ./
 RUN npm install \
@@ -14,6 +15,9 @@ RUN npm install \
 
 # Add your application files to the container
 COPY . .
+
+RUN mkdir in && \
+    mkdir out
 
 # Start the application
 CMD ["node", "./index.js"]
