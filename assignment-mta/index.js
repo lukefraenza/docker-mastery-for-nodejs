@@ -18,12 +18,14 @@ const logger = winston.createLogger({
   level: 'info',
   format: winston.format.simple(),
   transports: [
+    // log to console
+    new winston.transports.Console(),
     //
-    // - Write to all logs with level `info` and below to `combined.log` 
+    // - Write to all logs with level `info` and below to `combined.log`
     // - Write all logs error (and below) to `error.log`.
     //
-    new winston.transports.File({ filename: logDir + '/error.log', level: 'error' }),
-    new winston.transports.File({ filename: logDir + '/combined.log' })
+    // new winston.transports.File({ filename: logDir + '/error.log', level: 'error' }),
+    // new winston.transports.File({ filename: logDir + '/combined.log' })
   ]
 });
 
