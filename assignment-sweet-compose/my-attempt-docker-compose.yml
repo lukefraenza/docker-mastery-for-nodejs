@@ -1,26 +1,6 @@
 # compose versions are no longer needed for Compose CLI
 
 services:
-
-  traefik:
-    image: traefik:1.7-alpine
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    ports:
-      - "8080:80"
-    command:
-      - --docker
-      - --docker.domain=traefik
-      - --docker.watch
-      - --api
-      - --defaultentrypoints=http,https
-    labels:
-      - traefik.port=8080
-      - traefik.frontend.rule=Host:traefik.localhost
-    networks:
-      - frontend
-      - backend
-
   redis:
     image: redis:alpine
     networks:
@@ -33,6 +13,7 @@ services:
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
+      #POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
@@ -49,14 +30,11 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-    labels:
-      - traefik.port=80
-      - traefik.frontend.rule=Host:vote.localhost
 
   result:
     build:
       context: result
-    command: nodemon --inspect=0.0.0.0:9229 --legacy-watch server.js
+    command: /app/node_modules/.bin/nodemon server.js
     ports:
       - '5001:80'
       - '9229:9229'
@@ -67,9 +45,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    labels:
-      - traefik.port=80
-      - traefik.frontend.rule=Host:traefik.localhost
+    environment:
+      - NODE_ENV=development
 
   worker:
     image: bretfisher/examplevotingapp_worker
