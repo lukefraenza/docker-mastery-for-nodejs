@@ -34,15 +34,18 @@ services:
   result:
     build:
       context: result
+    command: /app/node_modules/.bin/nodemon server.js
     ports:
       - '5001:80'
     volumes:
-      - ./result:/result
+      - ./result:/app
     networks:
       - backend
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      - NODE_ENV=development
 
   worker:
     image: bretfisher/examplevotingapp_worker
