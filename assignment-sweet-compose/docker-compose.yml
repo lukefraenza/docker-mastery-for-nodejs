@@ -1,10 +1,32 @@
 # compose versions are no longer needed for Compose CLI
 
 services:
+
+  traefik:
+    image: traefik:1.7-alpine
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8080:80"
+    command:
+      - --docker
+      - --docker.domain=traefik
+      - --docker.watch
+      - --api
+      - --defaultentrypoints=http,https
+    labels:
+      - traefik.port=8080
+      - traefik.frontend.rule=Host:traefik.localhost
+    networks:
+      - frontend
+      - backend
+
   redis:
     image: redis:alpine
     networks:
       - frontend
+    healthcheck:
+      test: redis-cli ping
 
   db:
     image: postgres:15-alpine
@@ -15,6 +37,8 @@ services:
       - db-data:/var/lib/postgresql/data
     networks:
       - backend
+    healthcheck:
+      test: pg_isready -U postgres -h 127.0.0.1
 
   vote:
     image: bretfisher/examplevotingapp_vote
@@ -22,20 +46,41 @@ services:
       - '5000:80'
     networks:
       - frontend
+    depends_on:
+      redis:
+        condition: service_healthy
+    labels:
+      - traefik.port=80
+      - traefik.frontend.rule=Host:vote.localhost
 
   result:
-    build: 
+    build:
       context: result
+    command: nodemon --inspect=0.0.0.0:9229 --legacy-watch server.js
     ports:
       - '5001:80'
+      - '9229:9229'
+    volumes:
+      - ./result:/app
     networks:
       - backend
+    depends_on:
+      db:
+        condition: service_healthy
+    labels:
+      - traefik.port=80
+      - traefik.frontend.rule=Host:traefik.localhost
 
   worker:
     image: bretfisher/examplevotingapp_worker
     networks:
       - frontend
       - backend
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
 networks:
   frontend:
