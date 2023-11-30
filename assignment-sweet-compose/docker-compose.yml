@@ -37,6 +37,7 @@ services:
     command: /app/node_modules/.bin/nodemon server.js
     ports:
       - '5001:80'
+      - '9229:9229'
     volumes:
       - ./result:/app
     networks:
